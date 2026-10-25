@@ -1,91 +1,109 @@
-# CS 300: Data Structures and Algorithms — Course Planner Portfolio Artifact
+# CS 300: Data Structures and Algorithms — Course Planner Portfolio
 
 ## Overview
 
-This repository contains a portfolio artifact demonstrating my understanding of data structures and algorithmic design. The project is a command-line Course Planner implemented in C++. It reads course information from an external text file, stores the information in a Binary Search Tree (BST), and allows users to display courses in alphanumeric order or search for an individual course and its prerequisites.
+This repository contains portfolio artifacts from CS 300: Data Structures and Algorithms. The projects focus on designing a course planner in C++ that organizes Computer Science course information, searches for individual courses, and displays the course list in alphanumeric order.
 
-## Problem Solved
+The portfolio includes my analysis of different data structures, including vectors, hash tables, and binary search trees, along with my Project Two course planner implementation. These projects demonstrate my understanding of algorithmic efficiency, memory usage, data organization, and software development practices.
 
-The main objective of this project was to develop a program that could organize Computer Science course information and make it easier for an academic advisor or student to retrieve course details. The program needed to load course records, store course numbers and titles, manage prerequisites, display an alphabetized course list, and search for individual courses.
+## Project One: Runtime and Memory Analysis
 
-The software requirements included the ability to:
+### Problem Solved
 
-1. Read comma-separated course information from an external file.
-2. Store course information in a suitable data structure.
-3. Display the complete course list in alphanumeric order.
-4. Retrieve an individual course and display its title and prerequisites.
-5. Handle invalid input and course records without terminating unexpectedly.
+The goal of Project One was to determine which data structure would work best for a Computer Science course advisor program. The program needed to load course information, store course numbers and titles, manage prerequisites, search for individual courses, and display courses in alphanumeric order.
 
-## Algorithmic Approach and Reflection
+I compared three data structures: vectors, hash tables, and binary search trees. Each structure has different strengths and limitations depending on how information needs to be stored, searched, and displayed.
 
-### Why Data Structures Matter
+### Data Structure Comparison
 
-Data structures are important because they affect how efficiently a program stores, searches, and organizes information. Choosing the right structure can improve performance and make a program easier to maintain. For example, an unsorted list may require checking each entry when searching for a course, while a Binary Search Tree can reduce the number of comparisons when the tree is reasonably balanced. However, a BST's performance depends on its structure, so it is important to consider both average-case and worst-case complexity.
-
-### My Approach
-
-I implemented a custom **Binary Search Tree (BST)** to store and organize the course records.
-
-- **Dynamic Memory Management:** Each distinct course is stored in a dynamically allocated `Course` node. The node contains the course number, title, prerequisite vector, and pointers to its left and right children. The destructor releases the allocated nodes when the tree is destroyed.
-
-- **Alphanumeric Ordering:** The `printInOrder()` function uses recursive in-order traversal, visiting the left subtree, current node, and right subtree. Because courses are inserted according to their course numbers, this traversal prints the course list in alphanumeric order without requiring a separate sorting algorithm.
-
-- **Course Lookup:** The `search()` function compares the requested course number with the current node and follows the appropriate subtree. This takes approximately O(log N) time in a balanced tree, but can take O(N) time in the worst case if the tree becomes unbalanced.
-
-- **File Processing and Validation:** The `loadCourses()` function reads records from `courses.txt`, separates comma-delimited fields, and stores the course information in the tree. The `trim()` helper removes extra whitespace, and basic validation checks whether each record contains a course number and title before it is inserted.
-
-## Operational Complexity Breakdown (Project One Component)
-
-The following analysis compares the expected and worst-case runtime of the BST operations.
-
-| BST Method / Operation | Average Case | Worst Case | Explanation |
+| Operation | Vector | Hash Table | Binary Search Tree |
 |---|---|---|---|
-| `insertCourse()` / `insert()` | O(log N) | O(N) | In a reasonably balanced tree, insertion follows a path proportional to the tree's height. In an unbalanced tree, the path can grow to include nearly every existing node. |
-| `printCourseList()` / `printInOrder()` | O(N) | O(N) | Every course node must be visited to print the complete list. |
-| `printCourse()` / `search()` | O(log N) | O(N) | Searching follows one path through the tree. A balanced tree has logarithmic height, while an unbalanced tree can have linear height. |
+| Load courses | O(n) amortized, excluding validation | O(n) average | O(n log n) average |
+| Search for a course | O(n) | O(1) average | O(log n) average |
+| Print sorted courses | O(n log n) if sorting is required | O(n log n) if sorting is required | O(n) using in-order traversal |
+| Memory usage | O(n) | O(n) | O(n) |
 
-### Memory Complexity
+The worst-case runtime for hash table operations can increase because of collisions. A regular binary search tree can also become unbalanced, resulting in O(n) search and insertion times and O(n²) total loading time in the worst case.
 
-- **Structural Space Complexity: O(N)**
+All three structures require O(n) structural memory to store the course records. However, a binary search tree requires additional memory for its child pointers, while a hash table requires storage for its buckets and collision management.
 
-  The tree stores one node for each distinct course number. Each node contains course information, a prerequisite vector, and two child pointers. The total memory required grows with the number of courses and the amount of information stored in their fields.
+### Recommendation
 
-- **Auxiliary Stack Space Complexity: O(H)**
+I recommended using a binary search tree because it supports both individual course searches and displaying the course list in alphanumeric order. In-order traversal visits each node once and prints the courses in sorted order without requiring a separate sorting operation.
 
-  The recursive insertion, search, traversal, and destruction functions use call-stack space proportional to the height of the tree, represented by H. For a balanced tree, the height is approximately O(log N). For an unbalanced tree, it can grow to O(N).
+The main limitation is that a regular binary search tree does not automatically balance itself. A self-balancing tree, such as an AVL tree, could provide more consistent performance for larger course catalogs.
 
-These complexity estimates describe the BST operations and do not include all the additional memory required to read and parse the input file.
+The full analysis is available in `ProjectOne_Runtime_Memory_Analysis.md`.
 
-## Overcoming Roadblocks
+## Project Two: Computer Science Course Planner
 
-One challenge was handling whitespace and validating course records loaded from the input file. Extra spaces and carriage-return characters can affect course numbers and titles, which may cause formatting or lookup problems. Missing fields can also lead to incomplete course records.
+### Overview
 
-I addressed these issues by creating a `trim()` helper function using `find_first_not_of()` and `find_last_not_of()` to remove unnecessary whitespace. I also added validation checks in the file-loading function to skip empty or invalid records. These improvements made the input process more reliable and helped prevent incomplete records from being inserted into the tree.
+For Project Two, I developed a command-line Course Planner in C++. The program loads course information from `courses.txt`, stores courses in a Binary Search Tree, and allows users to display the complete course list or look up an individual course and its prerequisites.
 
-Another important consideration was understanding how the order of inserted courses affects BST performance. Since the tree is not self-balancing, inserting courses in an unfavorable order can reduce its efficiency. This helped me understand why data structure selection must account for both typical and worst-case scenarios.
+### Implementation
 
-## Impact on Software Design
+The program uses a `Course` structure to store the course number, course title, prerequisite vector, and pointers to the left and right child nodes. The `CourseBST` class manages the tree and includes functions for inserting courses, searching for a course, printing the course list, and releasing allocated memory.
 
-This project expanded my approach to software design by teaching me to consider efficiency, memory usage, and data organization before choosing an implementation. Instead of focusing only on whether a program produces the correct output, I now consider how its operations perform as the amount of data increases.
+The program reads comma-separated course records from an external text file. It includes a `trim()` helper function to remove extra whitespace and basic validation to skip records that are missing a course number or title.
 
-I also learned the value of separating responsibilities. The `CourseBST` class manages the tree, while the loading function handles file processing and the main function manages the user menu. This organization makes the program easier to understand, test, and update.
+The menu provides three main options:
 
-## Maintainability, Readability, and Adaptability
+1. Load the course data.
+2. Print the course list in alphanumeric order.
+3. Search for a course and display its prerequisites.
 
-- **Maintainability:** I organized the program into separate functions and used the `CourseBST` class to manage tree operations. Private recursive functions handle insertion, searching, traversal, and cleanup, while public methods provide access to the required operations.
+Option 9 exits the program.
 
-- **Readability:** I used descriptive variable and function names, consistent indentation, comments, and clear menu messages. I also included error messages for invalid menu input, missing files, and unsuccessful course searches.
+### Data Structures and Algorithms
 
-- **Adaptability:** The `Course` structure uses a `std::vector` to store prerequisites, allowing courses to have different numbers of prerequisites without requiring a fixed-size array. The file-loading approach also makes it possible to update course information by modifying the input file rather than changing every course directly in the program.
+The program uses a Binary Search Tree to organize courses by course number. Its recursive `insert()` function places courses in the appropriate subtree, and its `search()` function follows the tree according to the course number being searched.
 
-Working on this project helped me understand how selecting appropriate data structures, analyzing complexity, validating input, and organizing code contribute to building maintainable and reliable software.
+The `printInOrder()` function visits the left subtree, current node, and right subtree. This traversal displays courses in alphanumeric order in O(n) time because each node is visited once.
 
-## Skills Demonstrated
+Searching and insertion take approximately O(log n) time when the tree is reasonably balanced. However, because the tree does not automatically balance itself, these operations can take O(n) time in the worst case.
+
+The tree requires O(n) structural memory, while recursive operations use additional call-stack space proportional to the tree's height.
+
+### Skills Demonstrated
 
 - C++ programming and object-oriented design
 - Binary Search Trees and recursive algorithms
 - Runtime and memory complexity analysis
 - Searching and in-order traversal
-- File processing and data validation
+- File processing and input validation
 - Dynamic memory management
-- Debugging and maintainable code organization
+- Debugging and code organization
+
+## Reflection
+
+### What problem were you solving in these projects?
+
+The main problem was developing a course planner that could organize Computer Science course information and make it easy to retrieve. The program needed to load course records, store prerequisites, search for individual courses, and display the course list in the correct order. These requirements helped me understand how data structures can solve practical programming problems.
+
+### How did you approach the problem?
+
+I compared vectors, hash tables, and binary search trees to understand how each structure affects runtime, memory usage, and searching. I then applied my understanding of data structures and algorithms to the course planner by using a Binary Search Tree to organize and retrieve course information. This helped me understand why it is important to choose a data structure based on the requirements of the program rather than simply choosing the easiest option.
+
+### How did you overcome roadblocks?
+
+One challenge was processing course information from a file and making sure the records were valid. Extra whitespace, missing fields, and incorrect course information could cause problems during loading or searching. I addressed these issues by using a `trim()` helper function, adding validation checks, and reviewing the program logic. Breaking the program into smaller functions also made it easier to identify and correct problems.
+
+### How has this project expanded your approach to software design?
+
+This project taught me to consider efficiency and memory usage when designing software. I learned that a program can produce the correct output but still have performance limitations depending on the data structure being used. Comparing the different structures helped me understand how algorithmic complexity affects scalability and how choosing the right approach can improve a program's performance.
+
+### How has this project improved your ability to write maintainable, readable, and adaptable programs?
+
+I learned the importance of using meaningful variable names, organizing code into separate functions, and keeping related operations together in a class. I also gained experience with input validation, recursion, and dynamic memory management. Using a vector to store prerequisites makes the program adaptable to courses with different numbers of prerequisites. These practices will help me write programs that are easier to understand, test, maintain, and update as requirements change.
+
+## Repository Contents
+
+- `README.md` — Project overview, reflection, and summary of skills demonstrated.
+- `ProjectOne_Runtime_Memory_Analysis.md` — Comparison of data structures, runtime complexity, memory usage, and recommendation.
+- `main.cpp` — C++ implementation of the course planner.
+- `courses.txt` — Input file containing course records, if included in the repository.
+
+## Conclusion
+
+Completing these projects helped me develop a stronger understanding of data structures, algorithmic complexity, and software design. I learned how vectors, hash tables, and binary search trees differ in performance and memory usage, and how those differences influence implementation decisions. I also gained experience organizing C++ code, validating file input, using recursion, and designing a program that is easier to maintain and adapt. These skills will be useful in future software development projects.
