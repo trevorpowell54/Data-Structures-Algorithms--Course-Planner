@@ -1,0 +1,176 @@
+# CS 300 Project One: Runtime and Memory Analysis of Data Structures
+
+## Overview
+
+The purpose of Project One was to compare different data structures for a Computer Science course advisor program. The program needed to load course information, store course numbers and titles, manage prerequisites, search for individual courses, and display courses in alphanumeric order.
+
+The three data structures evaluated were a vector, a hash table, and a binary search tree (BST). Each structure offers different advantages depending on how the program needs to store, retrieve, and display information.
+
+For this analysis, *n* represents the number of courses in the input file.
+
+## 1. Data Structure Definitions
+
+### Vector
+
+A vector stores course objects in a dynamically sized sequence. Each course contains a course number, title, and list of prerequisites.
+
+```text
+Structure Course
+    String courseNumber
+    String title
+    List of String prerequisites
+End Structure
+
+Create Vector<Course> courseVector
+```
+
+Vectors are straightforward to implement and allow courses to be processed in sequence. However, searching for a course by its course number requires a linear search unless the data is sorted and a suitable search algorithm is used.
+
+### Hash Table
+
+A hash table stores course objects using a hash key generated from each course number.
+
+```text
+Create HashTable<String, Course> courseTable
+```
+
+Hash tables are useful when the primary goal is retrieving a course by its course number. Searching, inserting, and removing entries can take O(1) average time, although collisions and poor hash distribution can increase the runtime.
+
+### Binary Search Tree
+
+A binary search tree organizes courses according to their course numbers. Each node contains a course and pointers to its left and right children.
+
+```text
+Structure Node
+    Course course
+    Node left
+    Node right
+End Structure
+```
+
+Courses with smaller keys are placed in the left subtree, while courses with larger keys are placed in the right subtree. This structure supports searching and allows an in-order traversal to display the courses in alphanumeric order.
+
+## 2. Loading, Parsing, and Validating Data
+
+The course advisor must read information from a file, separate each record into fields, validate the data, and store valid course objects in the selected data structure.
+
+The general process includes:
+
+1. Open the course data file and check whether it is accessible.
+2. Read each line and separate the course number, title, and prerequisites.
+3. Check that required fields are present and not empty.
+4. Validate prerequisites against the available course numbers.
+5. Create course objects and store them in the selected data structure.
+6. Close the file and report the result.
+
+The cost of loading depends on the data structure and the validation method. For example, appending a course to a vector is O(1) amortized, while inserting a course into a BST depends on the height of the tree. Repeatedly searching a list of all course numbers to validate prerequisites can also increase the total loading time.
+
+## 3. Runtime and Big O Analysis
+
+The following table compares the expected and worst-case runtime for each data structure. The analysis assumes that *n* courses are being processed and that sorting is required when the structure does not maintain the required order.
+
+| Operation | Vector | Hash Table | Binary Search Tree |
+|---|---|---|---|
+| Load and store courses | O(n) amortized, excluding validation | O(n) average; O(n²) worst case | O(n log n) average; O(n²) worst case |
+| Print all courses in sorted order | O(n log n) if sorting is required | O(n log n) if sorting is required | O(n) using in-order traversal |
+| Search for one course | O(n) | O(1) average; O(n) worst case | O(log n) average; O(n) worst case |
+| Structural memory | O(n) | O(n) | O(n) |
+
+### Vector Runtime
+
+Loading *n* courses into a vector by appending each course takes O(n) amortized time, assuming parsing and validation costs are excluded. A single append can occasionally take O(n) when the vector must allocate a larger storage area and move its elements.
+
+Searching for a course takes O(n) in the worst case because the program may need to examine every course. Printing courses in sorted order requires O(n log n) time if a comparison-based sorting algorithm is used first.
+
+### Hash Table Runtime
+
+A hash table provides O(1) average-case lookup, insertion, and removal when the hash function distributes keys effectively and the table is appropriately sized.
+
+Loading *n* courses generally takes O(n) average time. In the worst case, repeated collisions can cause operations to take O(n) each, resulting in O(n²) total insertion time.
+
+A hash table does not automatically maintain alphanumeric order. To print the courses in order, the program must retrieve the entries and sort them, generally requiring O(n log n) time.
+
+### Binary Search Tree Runtime
+
+In a reasonably balanced BST, searching and inserting a course take O(log n) time on average. Loading *n* courses therefore takes O(n log n) time on average.
+
+A regular BST does not automatically balance itself. If courses are inserted in an unfavorable order, the tree can become skewed. In that case, insertion or searching can take O(n) time, and loading all *n* courses can take O(n²) time.
+
+The main advantage is that in-order traversal prints the courses in alphanumeric order in O(n) time. Each node is visited once, so a separate sorting operation is unnecessary.
+
+## 4. Memory Complexity Analysis
+
+All three data structures require O(n) structural memory because they store information for *n* courses. However, their memory organization differs.
+
+### Vector
+
+A vector stores course objects in a contiguous, dynamically managed array. It may allocate additional capacity to accommodate future elements. Its storage overhead is generally low, and it does not require a separate pointer for each course to connect it to other courses.
+
+### Hash Table
+
+A hash table requires storage for its entries and supporting bucket or collision-management structures. Its memory usage remains O(n) when the number of entries grows proportionally with the number of courses. The amount of unused capacity and the collision-handling method affect its practical memory requirements.
+
+### Binary Search Tree
+
+A BST requires O(n) structural memory for its nodes. Each node stores course information and two child pointers. This introduces additional per-node overhead compared with a simple vector.
+
+The recursive functions also use auxiliary call-stack space proportional to the height of the tree, O(h). For a balanced tree, this is O(log n), while an unbalanced tree can require O(n) stack space.
+
+These estimates focus on the data structures themselves. The course titles, course numbers, and prerequisite strings also require memory, which depends on the total amount of text stored.
+
+## 5. Advantages and Disadvantages
+
+### Vector
+
+**Advantages**
+- Simple to implement and maintain.
+- Efficient sequential access and iteration.
+- Efficient amortized appending.
+- Low structural overhead.
+
+**Disadvantages**
+- Linear search takes O(n) time.
+- Sorting is required to produce an ordered list when the data is not already sorted.
+- Removing elements from the middle can require shifting later elements.
+
+A vector is a good option when the course list is relatively small or when sequential processing is more important than frequent individual lookups.
+
+### Hash Table
+
+**Advantages**
+- Fast average-case lookup by course number.
+- Efficient average-case insertion and removal.
+- Useful when courses need to be retrieved frequently.
+
+**Disadvantages**
+- Does not automatically keep courses in alphanumeric order.
+- Collisions can reduce performance.
+- Requires additional storage for buckets or collision management.
+
+A hash table is a strong option when fast individual course lookups are the main priority, but it requires additional work to produce a sorted course list.
+
+### Binary Search Tree
+
+**Advantages**
+- Supports course lookup by course number.
+- Provides O(log n) average-case searching and insertion when reasonably balanced.
+- Produces an ordered course list through in-order traversal.
+- Can grow dynamically as new courses are inserted.
+
+**Disadvantages**
+- A regular BST can become unbalanced.
+- Worst-case search and insertion take O(n) time.
+- Loading all courses can take O(n²) time in the worst case.
+- Each node requires additional memory for its child pointers.
+
+A BST is useful when the program needs both individual course lookups and an ordered course list. However, its performance depends on the order in which courses are inserted.
+
+## 6. Recommendation
+
+I recommend a binary search tree for the course advisor program because it supports both searching for individual courses and displaying the entire course list in alphanumeric order. Its in-order traversal provides the required sorted output without a separate sorting step.
+
+A vector would be simpler and would support efficient sequential processing, but searching for an individual course would take O(n) time. A hash table would offer faster average-case lookups, but it would require an additional sorting step to display the courses in order.
+
+The main limitation of a regular BST is that it can become unbalanced. If the course list grows significantly, a self-balancing tree, such as an AVL tree, could provide more consistent performance. Although this would require additional implementation work, it would reduce the risk of the tree degrading into a linear structure.
+
+Overall, the BST is a practical choice for this project because it combines course searching with ordered output. Comparing these structures helped me understand that choosing a data structure involves balancing runtime, memory usage, implementation complexity, and the program's specific requirements.
