@@ -1,0 +1,8 @@
+CSCI100,Introduction to Computer Science
+CSCI101,Introduction to Programming in C++,CSCI100
+CSCI200,Data Structures,CSCI101
+CSCI300,Advanced Packages,CSCI200
+CSCI350,Operating Systems,CSCI300
+MATH201,Discrete Mathematics
+CSCI400,Large Software Development,CSCI300,CSCI350
+MATH301,Linear Algebra,MATH201
